@@ -1,0 +1,12 @@
+# This file contains all the tools and functionalities that we intend to
+# implement into our automated forensic evidence gathering tool.
+#
+# Version:  Fed-22-2018
+
+
+1.  A filesystem scanner that returns recently modified files
+
+2.  The automation of the the imaging of a system drives
+
+3.  The automation of a memory dump
+    A.  This automation of simple memory analysis tools, like foremost. 
