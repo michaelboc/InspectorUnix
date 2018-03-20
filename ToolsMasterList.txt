@@ -12,6 +12,14 @@
 3.  The automation of a memory dump
     A.  This automation of simple memory analysis tools, like foremost. 
     
+4.  Analysis
+        A. Files most recently modified.
+        B. Filesystem
+        C. Volitile data 
+        D. Netstat
+        E. timedatectl 
+        F. who
+    
     
 Inputs:
     What drive to image
