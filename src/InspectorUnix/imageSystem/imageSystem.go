@@ -8,7 +8,7 @@ Version: Mar-20-2018
 */
 
 
-package imageDrive
+package imageSystem
 
 import (
     "os/exec"
@@ -25,10 +25,10 @@ import (
 func ImageDrive( drivePath string, imageDirectory string, imageName string ){
 
     // Create the image file
-    var imagePath string = fmt.Sprintf( "%s%s", imageDirectory, imageName )
+    var imagePath string = fmt.Sprintf( "%s/%s", imageDirectory,imageName )
     var arg1 string = fmt.Sprintf( "if=%s", drivePath )
     var arg2 string = fmt.Sprintf( "of=%s", imagePath )
-    out, err := exec.Command("dd", arg1, arg2 ).Output()
+    out, err := exec.Command("./bin/dd", arg1, arg2 ).Output()
 
     // Handle any errors that may arise
     if err != nil {
@@ -45,10 +45,13 @@ func ImageDrive( drivePath string, imageDirectory string, imageName string ){
 
 // Function ImageMem will compile fmem, run the accompaning script and collect a
 // memory dump of the system.
-func ImageMem(){
-    
+func ImageMemory( imageDirectory string, driveMount string ){
     // Compile fmem 
-    out, err := exec.Command( "./fmem/make" ).Output()
+    cmd := exec.Command( "make" )
+    var fmemPath string = fmt.Sprintf( "%s/bin/fmem", driveMount )
+    cmd.Dir = fmemPath
+    err := cmd.Run() 
+    
     // Handle any errors that may arise
     if err != nil {
         fmt.Printf("Drive imaging has failed\n")
@@ -56,7 +59,9 @@ func ImageMem(){
     }
     
     // Run the fmem script
-    out, err = exec.Command( "./fmem/run.sh" ).Output()
+    cmd = exec.Command( "./run.sh" )
+    cmd.Dir = fmemPath
+    err = cmd.Run() 
     // Handle any errors that may arise
     if err != nil {
         fmt.Printf("Drive imaging has failed\n")
@@ -64,8 +69,7 @@ func ImageMem(){
     }
 
     // Dump the memory 
-    // TODO figure out the path for the images
-    // ImageDrive( "/dev/fmem", "  
+    ImageDrive( "/dev/fmem", imageDirectory, "memoryDump.dd" )  
 }
 
 
@@ -74,7 +78,7 @@ func ImageMem(){
 func hashImage( imageDirectory string, imagePath string ){
     
     // Create the hashfile
-    var hashPath string = fmt.Sprintf( "%s%s", imageDirectory, "imageHashes.txt" ) 
+    var hashPath string = fmt.Sprintf( "%s/%s", imageDirectory, "imageHashes.txt" ) 
     file, err := os.Create( hashPath ) 
     // Handle any errors that may arise
     if err != nil {
@@ -86,7 +90,7 @@ func hashImage( imageDirectory string, imagePath string ){
     file.WriteString( "MD5 Hash\n" ) 
     file.WriteString( "--------\n" ) 
     out, err := exec.Command(
-        "md5sum", imagePath ).Output()
+        "./bin/md5sum", imagePath ).Output()
     // Handle any errors that may arise
     if err != nil {
         fmt.Printf("Calculating the MD5 hash has failed.\n")
@@ -99,7 +103,7 @@ func hashImage( imageDirectory string, imagePath string ){
     file.WriteString( "\nSHA1\n" ) 
     file.WriteString( "----\n" ) 
     out, err = exec.Command(
-        "sha1sum", imagePath ).Output()
+        "./bin/shasum", "-a", "256", imagePath ).Output()
     // Handle any errors that may arise
     if err != nil {
         fmt.Printf("Calculating the SHA256 hash has failed.\n")

@@ -1,0 +1,1 @@
+cmd_/media/sansforensics/mhb5918/bin/fmem/fmem.ko := ld -r -m elf_x86_64 -T /usr/src/linux-headers-3.13.0-44-generic/scripts/module-common.lds --build-id  -o /media/sansforensics/mhb5918/bin/fmem/fmem.ko /media/sansforensics/mhb5918/bin/fmem/fmem.o /media/sansforensics/mhb5918/bin/fmem/fmem.mod.o
