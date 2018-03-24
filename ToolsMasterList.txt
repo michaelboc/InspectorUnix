@@ -1,0 +1,25 @@
+# This file contains all the tools and functionalities that we intend to
+# implement into our automated forensic evidence gathering tool.
+#
+# Version:  Mar-20-2018
+
+
+
+1.  Automation of the the imaging of a system drives
+    A. Also hash the image
+
+2.  A filesystem scanner that returns recently modified files
+
+3.  The automation of a memory dump
+    
+4.  Analysis
+        A. Files most recently modified.
+        B. Filesystem
+        C. Volitile data 
+        D. Netstat
+        E. timedatectl 
+        F. who
+    
+Inputs:
+    What drive to image
+    
