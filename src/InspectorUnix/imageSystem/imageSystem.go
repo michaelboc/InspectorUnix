@@ -22,6 +22,8 @@ import (
 // drive located there.
 //
 // Param:   drivePath       the path to a device file of a drive
+// Param:   imageDirectory  the path to the directory which stores the image
+// Param:   imageName       the desired name for the image file
 func ImageDrive( drivePath string, imageDirectory string, imageName string ){
 
     // Create the image file
@@ -45,6 +47,9 @@ func ImageDrive( drivePath string, imageDirectory string, imageName string ){
 
 // Function ImageMem will compile fmem, run the accompaning script and collect a
 // memory dump of the system.
+//
+// Param:   imageDirectory  the path to the directory which stores the image
+// Param:   driveMount      where the USB drive is mounted
 func ImageMemory( imageDirectory string, driveMount string ){
     // Compile fmem 
     cmd := exec.Command( "make" )
@@ -75,6 +80,9 @@ func ImageMemory( imageDirectory string, driveMount string ){
 
 // Function hashImage will hash the image located at imagePath, and print the
 // MD5 and SHA256 hashes to a file.
+//
+// Param:   imageDirectory  the path to the directory which stores the image
+// Param:   imagePath       the full path to the image which will be hashed
 func hashImage( imageDirectory string, imagePath string ){
     
     // Create the hashfile
