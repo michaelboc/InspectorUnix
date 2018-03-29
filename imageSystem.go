@@ -8,13 +8,14 @@ Version: Mar-20-2018
 */
 
 
-package imageSystem
+package main
 
 import (
     "os/exec"
     "os"
     "fmt"
     "log"
+    "sync"
 )
 
 
@@ -22,18 +23,17 @@ import (
 // drive located there.
 //
 // Param:   drivePath       the path to a device file of a drive
-// Param:   imageDirectory  the path to the directory which stores the image
-// Param:   imageName       the desired name for the image file
-func ImageDrive( drivePath string, imageDirectory string, imageName string ){
+func ImageDrive( drivePath string, imageDirectory string, imageName string, wg *sync.WaitGroup ){
 
     // Create the image file
     var imagePath string = fmt.Sprintf( "%s/%s", imageDirectory,imageName )
     var arg1 string = fmt.Sprintf( "if=%s", drivePath )
     var arg2 string = fmt.Sprintf( "of=%s", imagePath )
-    out, err := exec.Command("./bin/dd", arg1, arg2 ).Output()
+    out, err := exec.Command("dd", arg1, arg2 ).Output()
 
     // Handle any errors that may arise
     if err != nil {
+    	wg.Done()
         fmt.Printf("Drive imaging has failed\n")
         log.Fatal(err)
     }
@@ -42,15 +42,13 @@ func ImageDrive( drivePath string, imageDirectory string, imageName string ){
     fmt.Printf("Drive imaging was sucessfull %s\n", out)
     // Calculate the hashes
     hashImage( imageDirectory, imagePath )
+    wg.Done()
 }
 
 
 // Function ImageMem will compile fmem, run the accompaning script and collect a
 // memory dump of the system.
-//
-// Param:   imageDirectory  the path to the directory which stores the image
-// Param:   driveMount      where the USB drive is mounted
-func ImageMemory( imageDirectory string, driveMount string ){
+func ImageMemory( imageDirectory string, driveMount string, wg *sync.WaitGroup ){
     // Compile fmem 
     cmd := exec.Command( "make" )
     var fmemPath string = fmt.Sprintf( "%s/bin/fmem", driveMount )
@@ -59,6 +57,7 @@ func ImageMemory( imageDirectory string, driveMount string ){
     
     // Handle any errors that may arise
     if err != nil {
+    	wg.Done()
         fmt.Printf("Drive imaging has failed\n")
         log.Fatal(err)
     }
@@ -70,19 +69,19 @@ func ImageMemory( imageDirectory string, driveMount string ){
     // Handle any errors that may arise
     if err != nil {
         fmt.Printf("Drive imaging has failed\n")
+        wg.Done()
         log.Fatal(err)
     }
+    wg.Done()
+
 
     // Dump the memory 
-    ImageDrive( "/dev/fmem", imageDirectory, "memoryDump.dd" )  
+    //ImageDrive( "/dev/fmem", imageDirectory, "memoryDump.dd" )
 }
 
 
 // Function hashImage will hash the image located at imagePath, and print the
 // MD5 and SHA256 hashes to a file.
-//
-// Param:   imageDirectory  the path to the directory which stores the image
-// Param:   imagePath       the full path to the image which will be hashed
 func hashImage( imageDirectory string, imagePath string ){
     
     // Create the hashfile

@@ -8,12 +8,6 @@ import (
 	"fmt"
 )
 
-func main(){
-	makeoutfile()
-
-
-
-}
 
 func makeoutfile(){
 
