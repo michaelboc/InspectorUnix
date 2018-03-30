@@ -4,7 +4,7 @@ imageSystem.go
 This file contains the source code which implements the drive image
 collection, and the generation of a image file hash.
 
-Version: Mar-20-2018
+Version: Mar-30-2018
 */
 
 
@@ -23,6 +23,8 @@ import (
 // drive located there.
 //
 // Param:   drivePath       the path to a device file of a drive
+// Param:   imageDirectory  the path to the directory to store the file
+// Param:   imageName       the string to name the image file with
 func ImageDrive( drivePath string, imageDirectory string, imageName string, wg *sync.WaitGroup ){
 
     // Create the image file
@@ -48,6 +50,9 @@ func ImageDrive( drivePath string, imageDirectory string, imageName string, wg *
 
 // Function ImageMem will compile fmem, run the accompaning script and collect a
 // memory dump of the system.
+//
+// Param:   imageDirectory  the path to the directory to store the file
+// Param:   driveMount      the path to where the drive has been mounted
 func ImageMemory( imageDirectory string, driveMount string, wg *sync.WaitGroup ){
     // Compile fmem 
     cmd := exec.Command( "make" )
@@ -72,16 +77,17 @@ func ImageMemory( imageDirectory string, driveMount string, wg *sync.WaitGroup )
         wg.Done()
         log.Fatal(err)
     }
-    wg.Done()
-
-
     // Dump the memory 
-    //ImageDrive( "/dev/fmem", imageDirectory, "memoryDump.dd" )
+    ImageDrive( "/dev/fmem", imageDirectory, "memoryDump.dd" )
+    wg.Done()
 }
 
 
 // Function hashImage will hash the image located at imagePath, and print the
 // MD5 and SHA256 hashes to a file.
+//
+// Param:   imageDirectory  the path to the directory to store the file
+// Param:   imagePath       the path to where the image to be hashed is 
 func hashImage( imageDirectory string, imagePath string ){
     
     // Create the hashfile
@@ -97,7 +103,7 @@ func hashImage( imageDirectory string, imagePath string ){
     file.WriteString( "MD5 Hash\n" ) 
     file.WriteString( "--------\n" ) 
     out, err := exec.Command(
-        "./bin/md5sum", imagePath ).Output()
+        "md5sum", imagePath ).Output()
     // Handle any errors that may arise
     if err != nil {
         fmt.Printf("Calculating the MD5 hash has failed.\n")
@@ -107,10 +113,10 @@ func hashImage( imageDirectory string, imagePath string ){
     file.WriteString( string(out) ) 
 
     // Calculate SHA256 hash 
-    file.WriteString( "\nSHA1\n" ) 
-    file.WriteString( "----\n" ) 
+    file.WriteString( "\nSHA256\n" ) 
+    file.WriteString( "------\n" ) 
     out, err = exec.Command(
-        "./bin/shasum", "-a", "256", imagePath ).Output()
+        "shasum", "-a", "256", imagePath ).Output()
     // Handle any errors that may arise
     if err != nil {
         fmt.Printf("Calculating the SHA256 hash has failed.\n")
