@@ -4,7 +4,7 @@ imageSystem.go
 This file contains the source code which implements the drive image
 collection, and the generation of a image file hash.
 
-Version: Mar-30-2018
+Version: Apr-02-2018
 */
 
 
@@ -42,8 +42,11 @@ func ImageDrive( drivePath string, imageDirectory string, imageName string, wg *
 
     // Print that imaging was successfull
     fmt.Printf("Drive imaging was sucessfull %s\n", out)
-    // Calculate the hashes
-    hashImage( imageDirectory, imagePath )
+    // No reason to hash memory, changes too often
+    if imageName != "memoryDump.dd" {
+        // Calculate the hashes
+        hashImage( drivePath, imageDirectory )
+    }
     wg.Done()
 }
 
@@ -54,30 +57,30 @@ func ImageDrive( drivePath string, imageDirectory string, imageName string, wg *
 // Param:   imageDirectory  the path to the directory to store the file
 // Param:   driveMount      the path to where the drive has been mounted
 func ImageMemory( imageDirectory string, driveMount string, wg *sync.WaitGroup ){
-    // Compile fmem 
+    // Compile fmem
     cmd := exec.Command( "make" )
     var fmemPath string = fmt.Sprintf( "%s/bin/fmem", driveMount )
     cmd.Dir = fmemPath
-    err := cmd.Run() 
-    
+    err := cmd.Run()
+
     // Handle any errors that may arise
     if err != nil {
     	wg.Done()
         fmt.Printf("Drive imaging has failed\n")
         log.Fatal(err)
     }
-    
+
     // Run the fmem script
     cmd = exec.Command( "./run.sh" )
     cmd.Dir = fmemPath
-    err = cmd.Run() 
+    err = cmd.Run()
     // Handle any errors that may arise
     if err != nil {
         fmt.Printf("Drive imaging has failed\n")
         wg.Done()
         log.Fatal(err)
     }
-    // Dump the memory 
+    // Dump the memory
     ImageDrive( "/dev/fmem", imageDirectory, "memoryDump.dd" )
     wg.Done()
 }
@@ -87,41 +90,41 @@ func ImageMemory( imageDirectory string, driveMount string, wg *sync.WaitGroup )
 // MD5 and SHA256 hashes to a file.
 //
 // Param:   imageDirectory  the path to the directory to store the file
-// Param:   imagePath       the path to where the image to be hashed is 
-func hashImage( imageDirectory string, imagePath string ){
-    
+// Param:   imagePath       the path to where the image to be hashed is
+func hashImage( targetPath string, imageDirectory string ){
+
     // Create the hashfile
-    var hashPath string = fmt.Sprintf( "%s/%s", imageDirectory, "imageHashes.txt" ) 
-    file, err := os.Create( hashPath ) 
+    var hashPath string = fmt.Sprintf( "%s/%s", imageDirectory, "imageHashes.txt" )
+    file, err := os.Create( hashPath )
     // Handle any errors that may arise
     if err != nil {
         fmt.Printf("Hashfile creatation has failed.\n")
         log.Fatal(err)
     }
-   
-    // Calculate MD5 hash 
-    file.WriteString( "MD5 Hash\n" ) 
-    file.WriteString( "--------\n" ) 
+
+    // Calculate MD5 hash
+    file.WriteString( "MD5 Hash\n" )
+    file.WriteString( "--------\n" )
     out, err := exec.Command(
-        "md5sum", imagePath ).Output()
+        "md5sum", targetPath ).Output()
     // Handle any errors that may arise
     if err != nil {
         fmt.Printf("Calculating the MD5 hash has failed.\n")
         log.Fatal(err)
     }
-    // Print the MD5 hash to file    
-    file.WriteString( string(out) ) 
+    // Print the MD5 hash to file
+    file.WriteString( string(out) )
 
-    // Calculate SHA256 hash 
-    file.WriteString( "\nSHA256\n" ) 
-    file.WriteString( "------\n" ) 
+    // Calculate SHA256 hash
+    file.WriteString( "\nSHA256\n" )
+    file.WriteString( "------\n" )
     out, err = exec.Command(
-        "shasum", "-a", "256", imagePath ).Output()
+        "shasum", "-a", "256", targetPath ).Output()
     // Handle any errors that may arise
     if err != nil {
         fmt.Printf("Calculating the SHA256 hash has failed.\n")
         log.Fatal(err)
     }
-    // Print the MD5 hash to file    
-    file.WriteString( string(out) ) 
+    // Print the MD5 hash to file
+    file.WriteString( string(out) )
 }
