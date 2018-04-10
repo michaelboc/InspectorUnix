@@ -81,7 +81,10 @@ func ImageMemory( imageDirectory string, driveMount string, wg *sync.WaitGroup )
         log.Fatal(err)
     }
     // Dump the memory
-    ImageDrive( "/dev/fmem", imageDirectory, "memoryDump.dd" )
+    var wg2 sync.WaitGroup
+    wg2.Add(1)
+    
+    ImageDrive( "/dev/fmem", imageDirectory, "memoryDump.dd", &wg2 )
     wg.Done()
 }
 

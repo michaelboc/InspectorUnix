@@ -18,6 +18,7 @@ import (
 // Main routine of the program
 func main() {
 	var wg sync.WaitGroup
+	wg.Add(3)
 	var pathtodrive string
 	fmt.Println("Input path to drive to image")
 	fmt.Scan(&pathtodrive)
@@ -27,7 +28,6 @@ func main() {
 	var name string
 	fmt.Println("Input desired name of image")
 	fmt.Scan(&name)
-	wg.Add()
     go ImageDrive(pathtodrive,wheretoput,name, &wg )
 	var directory string
 	fmt.Println("Input directory to put on flash drive")
@@ -35,7 +35,6 @@ func main() {
 	var flashpath string
 	fmt.Println("Input flash drive mounted path")
 	fmt.Scan(&flashpath)
-	wg.Add()
     go ImageMemory( directory, flashpath, &wg)
     makeoutfile()
     fmt.Println("Summary of computer information created, but drive and memory imaging still running")
