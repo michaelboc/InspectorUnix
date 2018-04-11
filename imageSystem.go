@@ -31,8 +31,8 @@ func ImageDrive( drivePath string, imageDirectory string, imageName string, wg *
     var imagePath string = fmt.Sprintf( "%s/%s", imageDirectory,imageName )
     var arg1 string = fmt.Sprintf( "if=%s", drivePath )
     var arg2 string = fmt.Sprintf( "of=%s", imagePath )
-    
-    fmt.Printf( "%s, %s\n", arg1, arg2 ); 
+
+    fmt.Printf( "%s, %s\n", arg1, arg2 );
     out, err := exec.Command("dd", arg1, arg2 ).Output()
 
     // Handle any errors that may arise
@@ -58,7 +58,7 @@ func ImageDrive( drivePath string, imageDirectory string, imageName string, wg *
 //
 // Param:   imageDirectory  the path to the directory to store the file
 // Param:   driveMount      the path to where the drive has been mounted
-func ImageMemory( imageDirectory string, driveMount string ){
+func ImageMemory( imageDirectory string, driveMount string, memSize string, wg *sync.WaitGroup ){
     // Compile fmem
     cmd := exec.Command( "make" )
     var fmemPath string = fmt.Sprintf( "%s/bin/fmem", driveMount )
@@ -80,11 +80,23 @@ func ImageMemory( imageDirectory string, driveMount string ){
         fmt.Printf("Memory imaging has failed\n")
         log.Fatal(err)
     }
-    // Dump the memory
-    var wg2 sync.WaitGroup
-    wg2.Add(1)
-    
-    ImageDrive( "/dev/fmem", imageDirectory, "memoryDump.dd", &wg2 )
+
+    // Create the image file
+    var arg2 string = fmt.Sprintf( "of=%s/memory.dd", imageDirectory )
+    var arg3 string = fmt.Sprintf( "count=%s", memSize )
+
+    out, err := exec.Command("dd", "if=/dev/fmem", arg2, "bs=1MB", arg3 ).Output()
+
+    // Handle any errors that may arise
+    if err != nil {
+    	wg.Done()
+        fmt.Printf("Drive imaging has failed\n")
+        log.Fatal(err)
+    }
+
+    // Print that imaging was successfull
+    fmt.Printf("Drive imaging was sucessfull %s\n", out)
+    defer wg.Done()
 }
 
 
