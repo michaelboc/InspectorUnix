@@ -31,6 +31,8 @@ func ImageDrive( drivePath string, imageDirectory string, imageName string, wg *
     var imagePath string = fmt.Sprintf( "%s/%s", imageDirectory,imageName )
     var arg1 string = fmt.Sprintf( "if=%s", drivePath )
     var arg2 string = fmt.Sprintf( "of=%s", imagePath )
+    
+    fmt.Printf( "%s, %s\n", arg1, arg2 ); 
     out, err := exec.Command("dd", arg1, arg2 ).Output()
 
     // Handle any errors that may arise
@@ -47,7 +49,7 @@ func ImageDrive( drivePath string, imageDirectory string, imageName string, wg *
         // Calculate the hashes
         hashImage( drivePath, imageDirectory )
     }
-    wg.Done()
+    defer wg.Done()
 }
 
 
@@ -56,7 +58,7 @@ func ImageDrive( drivePath string, imageDirectory string, imageName string, wg *
 //
 // Param:   imageDirectory  the path to the directory to store the file
 // Param:   driveMount      the path to where the drive has been mounted
-func ImageMemory( imageDirectory string, driveMount string, wg *sync.WaitGroup ){
+func ImageMemory( imageDirectory string, driveMount string ){
     // Compile fmem
     cmd := exec.Command( "make" )
     var fmemPath string = fmt.Sprintf( "%s/bin/fmem", driveMount )
@@ -65,8 +67,7 @@ func ImageMemory( imageDirectory string, driveMount string, wg *sync.WaitGroup )
 
     // Handle any errors that may arise
     if err != nil {
-    	wg.Done()
-        fmt.Printf("Drive imaging has failed\n")
+        fmt.Printf("Building the memory module has failed\n")
         log.Fatal(err)
     }
 
@@ -76,8 +77,7 @@ func ImageMemory( imageDirectory string, driveMount string, wg *sync.WaitGroup )
     err = cmd.Run()
     // Handle any errors that may arise
     if err != nil {
-        fmt.Printf("Drive imaging has failed\n")
-        wg.Done()
+        fmt.Printf("Memory imaging has failed\n")
         log.Fatal(err)
     }
     // Dump the memory
@@ -85,7 +85,6 @@ func ImageMemory( imageDirectory string, driveMount string, wg *sync.WaitGroup )
     wg2.Add(1)
     
     ImageDrive( "/dev/fmem", imageDirectory, "memoryDump.dd", &wg2 )
-    wg.Done()
 }
 
 
