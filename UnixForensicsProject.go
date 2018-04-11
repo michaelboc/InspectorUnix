@@ -18,7 +18,7 @@ import (
 // Main routine of the program
 func main() {
     var wg sync.WaitGroup
-    wg.Add(2)
+    wg.Add(1)
     // Memory Dump
     var directory string
     fmt.Println("Where to store memory dump?")
@@ -29,7 +29,6 @@ func main() {
     var memSize string
     fmt.Println( "How many megabytes of memory should be imaged?")
     fmt.Scan(&memSize)
-    go ImageMemory( directory, flashpath, memSize, &wg )
     // Drive imaging
     var pathtodrive string
     fmt.Println("Path to the suspect drive?")
@@ -40,6 +39,7 @@ func main() {
     var name string
     fmt.Println("Desired name of image?")
     fmt.Scan(&name)
+    ImageMemory( directory, flashpath, memSize )
     go ImageDrive( pathtodrive,wheretoput,name, &wg )
     // System stats
     makeoutfile()

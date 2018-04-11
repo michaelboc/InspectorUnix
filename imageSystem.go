@@ -58,7 +58,7 @@ func ImageDrive( drivePath string, imageDirectory string, imageName string, wg *
 //
 // Param:   imageDirectory  the path to the directory to store the file
 // Param:   driveMount      the path to where the drive has been mounted
-func ImageMemory( imageDirectory string, driveMount string, memSize string, wg *sync.WaitGroup ){
+func ImageMemory( imageDirectory string, driveMount string, memSize string ){
     // Compile fmem
     cmd := exec.Command( "make" )
     var fmemPath string = fmt.Sprintf( "%s/bin/fmem", driveMount )
@@ -89,14 +89,12 @@ func ImageMemory( imageDirectory string, driveMount string, memSize string, wg *
 
     // Handle any errors that may arise
     if err != nil {
-    	wg.Done()
         fmt.Printf("Drive imaging has failed\n")
         log.Fatal(err)
     }
 
     // Print that imaging was successfull
     fmt.Printf("Drive imaging was sucessfull %s\n", out)
-    defer wg.Done()
 }
 
 
