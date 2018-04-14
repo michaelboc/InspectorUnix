@@ -32,7 +32,6 @@ func ImageDrive( drivePath string, imageDirectory string, imageName string, wg *
     var arg1 string = fmt.Sprintf( "if=%s", drivePath )
     var arg2 string = fmt.Sprintf( "of=%s", imagePath )
 
-    fmt.Printf( "%s, %s\n", arg1, arg2 );
     out, err := exec.Command("dd", arg1, arg2 ).Output()
 
     // Handle any errors that may arise
