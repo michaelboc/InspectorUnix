@@ -1,14 +1,15 @@
-/*
-imageSystem.go
-
-This file contains the source code which implements the drive image
-collection, and the generation of a image file hash.
-
-Version: Apr-02-2018
-*/
+/**
+ * imageSystem.go
+ *
+ * This file contains the source code which implements the drive image
+ * collection, and the generation of a image file hash.
+ *
+ * Version: Apr-17-2018
+ */
 
 
 package main
+
 
 import (
     "os/exec"
@@ -19,12 +20,14 @@ import (
 )
 
 
-// Function ImageDrive will follow the path to a device file, and image the
-// drive located there.
-//
-// Param:   drivePath       the path to a device file of a drive
-// Param:   imageDirectory  the path to the directory to store the file
-// Param:   imageName       the string to name the image file with
+/**
+ * Function ImageDrive will follow the path to a device file, and image the
+ * drive located there.
+ *
+ * Param:   drivePath       the path to a device file of a drive
+ * Param:   imageDirectory  the path to the directory to store the file
+ * Param:   imageName       the string to name the image file with
+ */
 func ImageDrive( drivePath string, imageDirectory string, imageName string, wg *sync.WaitGroup ){
 
     // Create the image file
@@ -52,11 +55,13 @@ func ImageDrive( drivePath string, imageDirectory string, imageName string, wg *
 }
 
 
-// Function ImageMem will compile fmem, run the accompaning script and collect a
-// memory dump of the system.
-//
-// Param:   imageDirectory  the path to the directory to store the file
-// Param:   driveMount      the path to where the drive has been mounted
+/**
+ * Function ImageMem will compile fmem, run the accompaning script and collect a
+ * memory dump of the system.
+ *
+ * Param:   imageDirectory  the path to the directory to store the file
+ * Param:   driveMount      the path to where the drive has been mounted
+ */
 func ImageMemory( imageDirectory string, driveMount string, memSize string ){
     // Compile fmem
     cmd := exec.Command( "make" )
@@ -97,11 +102,13 @@ func ImageMemory( imageDirectory string, driveMount string, memSize string ){
 }
 
 
-// Function hashImage will hash the image located at imagePath, and print the
-// MD5 and SHA256 hashes to a file.
-//
-// Param:   imageDirectory  the path to the directory to store the file
-// Param:   imagePath       the path to where the image to be hashed is
+/**
+ * Function hashImage will hash the image located at imagePath, and print the
+ * MD5 and SHA256 hashes to a file.
+ *
+ * Param:   imageDirectory  the path to the directory to store the file
+ * Param:   imagePath       the path to where the image to be hashed is
+ */
 func hashImage( targetPath string, imageDirectory string ){
 
     // Create the hashfile

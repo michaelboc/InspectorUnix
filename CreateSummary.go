@@ -1,4 +1,15 @@
+/*
+ * main.go
+ *
+ * This file contains the source code of the main function of the forensic's
+ * tool InspectorUnix
+ *
+ * Version: Apr-17-2018
+*/
+
+
 package main
+
 
 import (
 	"os"
@@ -9,6 +20,9 @@ import (
 )
 
 
+/**
+ * Function collect system information, and outputs it to a file
+ */
 func makeoutfile(){
 
 	Outstring := "UnixDetective tool output: \n\n"
@@ -32,6 +46,12 @@ func makeoutfile(){
 	fmt.Println("Output also written to file out.txt")
 }
 
+
+/**
+ * Runs the command specified in the cmdout string
+ *
+ * Param:   mycmd   Command for the function to execute 
+ */
 func runcmdother(mycmd string) (cmdout string){
 	cmdoutbyte, err := exec.Command("sh","-c",mycmd).Output()
 	if err!=nil {
@@ -42,6 +62,12 @@ func runcmdother(mycmd string) (cmdout string){
 }
 
 
+/**
+ * Runs a command with a supplied arguement string.
+ *
+ * Param:   cmd     Command for the function to execute
+ * Param:   flag    Command arguement to run
+ */
 func runcmd(cmd string,flag string ) (cmdout string){
 	if flag == " " {
 		cmdoutbyte, err := exec.Command(cmd).Output()
@@ -59,6 +85,10 @@ func runcmd(cmd string,flag string ) (cmdout string){
 	return
 }
 
+
+/**
+ * Function which will join the arguements into a single string
+ */
 func joinstrings(string1, string2 string, message string) (mashstring string){
 	var strs []string
 	strs = append(strs, string1)
@@ -70,6 +100,10 @@ func joinstrings(string1, string2 string, message string) (mashstring string){
 	return
 }
 
+
+/**
+ * Prepares countstr for printing information
+ */
 func generateline(counstr string)(line string){
 	var strs []string
 	strs = append(strs,"\n")
@@ -81,6 +115,10 @@ func generateline(counstr string)(line string){
 	return
 }
 
+
+/**
+ * Opens the file, and prints Outstring to that file
+ */
 func writetofile(Outstring string, filename string){
 	file, err := os.Create(filename)
 	if err != nil {

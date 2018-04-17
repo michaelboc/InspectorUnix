@@ -1,21 +1,25 @@
 /*
-main.go
-
-This file contains the source code of the main function of the forensic's
-tool InspectorUnix
-
-Version: Apr-10-2018
+ * main.go
+ *
+ * This file contains the source code of the main function of the forensic's
+ * tool InspectorUnix
+ *
+ * Version: Apr-17-2018
 */
 
 
 package main
+
 
 import (
 	"fmt"
 	"sync"
 )
 
-// Main routine of the program
+
+/**
+ * Main routine of the program
+ */
 func main() {
     var wg sync.WaitGroup
     wg.Add(1)
